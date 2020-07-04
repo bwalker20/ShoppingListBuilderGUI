@@ -5,9 +5,9 @@ from os import path
 class Recipe:
     def __init__(self):
         self.cur_list = []
-        doc_path = os.path.expanduser("~/Documents")
-        if path.exists(doc_path + '/Recipes') == False:
-            file_path = doc_path + '/Recipes'
+        self.doc_path = os.path.expanduser("~/Documents")
+        if path.exists(self.doc_path + '/Recipes') == False:
+            file_path = self.doc_path + '/Recipes'
             access = 0o777
             try:
                 os.mkdir(file_path, access)
@@ -15,46 +15,29 @@ class Recipe:
             except OSError:
                 print("cannot create valid directory for recipes, try running program as admin")
 
-    def add_new(self):
-        print("Enter in the name of the recipe")
-        name = input()
-        while path.exists(doc_path + '/Recipes/{}.txt'.format(name)) == True:
-            print("This recipe name already exists, please try a different name")
-            name = input()
-        print("Enter in the number of different ingredients that are in the recipe")
-        while True:
-            try:
-                num_ingrediants = int(input())
-            except ValueError:
-                print("Not a valid number of ingredients, please try again")
-            else:
-                break
-        ingrediant_list = []
-        for i in range(int(num_ingrediants)):
-            print("Enter the name of ingredient {} and the units (Lbs, oz, etc.) *Amount needed will follow*".format(i+1))
-            ingrediant_name = input()
-            print("Enter the amount needed")
-            ingrediant_amount = input()
-            ingrediant_list.append(tuple((ingrediant_name, ingrediant_amount)))
-        with open(doc_path + '/Recipes/{}.txt'.format(name), "w") as fp:
-            fp.write('\n'.join('%s,%s' % x for x in ingrediant_list))
 
-    def select(self, shopping_list):
+    def add_new(self, name, ingredients):
+        #print("Adds a new recipe to the recipes folder")
+        if len(ingredients) == 0:
+            return
+        with open(self.doc_path + '/Recipes/{}.txt'.format(name), 'w') as fp:
+            fp.write('\n'.join('%s,%s' % x for x in ingredients))
+
+    def get_recipes(self):
+        #print("Returns a list of all the recipes")
         f = []
-        for (dirpath, dirnames, filenames) in os.walk('./Recipes'):
+        for (dirpath, dirnames, filenames) in os.walk(self.doc_path + '/Recipes'):
             f.extend(filenames)
             break
-        print("Current Recipies to Choose from:")
-        for i in f:
-            print(Path(i).with_suffix(''))
-        print("Enter what recipe you want to add, enter 'None' if you want to return to the main menu")
-        name = input()
-        if name == 'None':
-            return
-        if path.exists(doc_path + '/Recipes/{}.txt'.format(name)) == False:
-            print("This is not a valid recipe")
-            return
-        with open(doc_path + '/Recipes/{}.txt'.format(name), "r") as fp:
+        for i in range(len(f)):
+            f[i] = Path(f[i]).with_suffix('')
+        return f
+
+    def select_recipe(self, name, shopping_list):
+        #print("Adds all the ingredients of specified recipe to the shopping list disctionary, return true if recipe exists and false if recipe doesn't")
+        if shopping_list == None:
+            return path.exists(self.doc_path + '/Recipes/{}.txt'.format(name))
+        with open(self.doc_path + '/Recipes/{}.txt'.format(name), "r") as fp:
             for i in fp.readlines():
                 tmp = i.split(",")
                 if tmp[0] in shopping_list:
