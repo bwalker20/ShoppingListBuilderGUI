@@ -4,6 +4,7 @@ from tkinter import ttk
 import Recipe
 class App(tk.Frame):
     def __init__(self, master=None):
+        self.shopping_list = dict()
         self.recipe_list = Recipe.Recipe()
         super().__init__(master)
         self.master = master
@@ -14,10 +15,12 @@ class App(tk.Frame):
     def create_widgets(self):
         self.add_new_recipe = tk.Button(self.master, text = 'Add New Recipe', command=self.add_new)
         self.add_new_recipe.pack()
-        self.recipe_cb = ttk.Combobox(self.master, values = self.recipe_list.get_recipes())
+        self.recipe_cb = ttk.Combobox(self.master, postcommand = self.update_list) #values = self.recipe_list.get_recipes())
         self.recipe_cb.pack()
         self.recipe_sel = tk.Button(self.master, text = 'Select Recipe', command= lambda: self.select_recipe(self.recipe_cb.get()))
         self.recipe_sel.pack()
+        self.print_list_btn = tk.Button(self.master, text = "Print List", command = lambda: self.print_shopping_list())
+        self.print_list_btn.pack()
         self.exit = tk.Button(self.master, text = 'Exit', fg = 'red', command = self.master.destroy)
         self.exit.pack()
 
@@ -67,11 +70,24 @@ class App(tk.Frame):
         self.recipe_list.add_new(name, ing_list)
         window.destroy()
 
+    def update_list(self):
+        values = self.recipe_list.get_recipes()
+        self.recipe_cb['values'] = values
+
     def select_recipe(self, name):
-        print(name)
-        print("Finish This")
+        print("Selected Recipe:", name)
+        self.recipe_list.select_recipe(name, self.shopping_list)
 
-
+    def print_shopping_list(self):
+        print("Print Shopping List")
+        print_window = tk.Toplevel(self.master)
+        print_text = tk.Text(print_window)
+        for i in self.shopping_list:
+            print_text.insert(tk.END, str(self.shopping_list[i]) + ' : ' + i + '\n')
+        print_text.config(font='bold')
+        print_text.pack()
+        exit_window = tk.Button(print_window, text = 'Exit', command = print_window.destroy)
+        exit_window.pack()
         
 
 
