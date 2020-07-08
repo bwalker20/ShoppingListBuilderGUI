@@ -14,6 +14,7 @@ class Recipe:
                 print("Recipes Folder has been created in Documents")
             except OSError:
                 print("cannot create valid directory for recipes, try running program as admin")
+                exit(1)
 
 
     def add_new(self, name, ingredients):
