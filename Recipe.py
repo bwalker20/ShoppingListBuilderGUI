@@ -45,3 +45,9 @@ class Recipe:
                     shopping_list[tmp[0]] = shopping_list[tmp[0]] + float(tmp[1])
                 else:
                     shopping_list[tmp[0]] = float(tmp[1])
+
+    def delete_recipe(self, name):
+        if path.exists(self.doc_path + '/Recipes/{}.txt'.format(name)) == False:
+            return
+        os.remove(self.doc_path + '/Recipes/{}.txt'.format(name))
+

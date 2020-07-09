@@ -9,7 +9,7 @@ class App(tk.Frame):
         super().__init__(master)
         self.master = master
         self.pack()
-        self.master.geometry('300x200')
+        self.master.geometry('300x220')
         self.create_widgets()
 
     def create_widgets(self):
@@ -17,8 +17,10 @@ class App(tk.Frame):
         self.add_new_recipe.pack(pady = 5)
         self.recipe_cb = ttk.Combobox(self.master, postcommand = self.update_list)
         self.recipe_cb.pack(pady = 5)
-        self.recipe_sel = tk.Button(self.master, text = 'Select Recipe', command= lambda: self.select_recipe(self.recipe_cb.get()))
+        self.recipe_sel = tk.Button(self.master, text = 'Add Selected Recipe', command= lambda: self.select_recipe(self.recipe_cb.get()))
         self.recipe_sel.pack(pady = 5)
+        self.recipe_del = tk.Button(self.master, text = 'Delete Selected Recipe', command = lambda: self.delete_recipe(self.recipe_cb.get()))
+        self.recipe_del.pack(pady = 5)
         self.print_list_btn = tk.Button(self.master, text = "Print List", command = lambda: self.print_shopping_list())
         self.print_list_btn.pack(pady = 5)
         self.exit = tk.Button(self.master, text = 'Exit', fg = 'red', command = self.master.destroy)
@@ -78,6 +80,16 @@ class App(tk.Frame):
 
     def select_recipe(self, name):
         self.recipe_list.select_recipe(name, self.shopping_list)
+
+    def delete_recipe(self, name):
+        delete_alert_w = tk.Toplevel(self.master)
+        delete_alert_w.title("Delete Recipe")
+        delete_label = tk.Label(delete_alert_w, text = 'Are you sure you want to delete ' + name)
+        delete_label.pack()
+        delete_confirm = tk.Button(delete_alert_w, text = 'Delete', command = lambda: [self.recipe_list.delete_recipe(name), delete_alert_w.destroy(), self.recipe_cb.set('')])
+        delete_confirm.pack()
+        delete_cancel = tk.Button(delete_alert_w, text = 'Cancel', command = delete_alert_w.destroy)
+        delete_cancel.pack()
 
     def print_shopping_list(self):
         print_window = tk.Toplevel(self.master)
